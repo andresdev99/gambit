@@ -76,5 +76,5 @@ func UserIsAdmin(userUUID string) (bool, string) {
 		return true, ""
 	}
 
-	return false, "User is not Admin"
+	return false, "User is not Admin > " + value
 }
