@@ -70,9 +70,9 @@ func UserIsAdmin(userUUID string) (bool, string) {
 
 	rows.Next()
 	err = rows.Scan(&value)
-	if err != nil {
-		return false, err.Error()
-	}
+	//if err != nil {
+	//	return false, err.Error()
+	//}
 
 	fmt.Println("User Is Admin > Execution successfully")
 
