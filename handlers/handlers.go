@@ -33,7 +33,7 @@ func Handlers(path, method, body string, headers map[string]string, request even
 		return OrderProcess(body, path, method, user, idNumber, request)
 	}
 
-	return 400, "Invalid Method"
+	return 400, "Invalid Method for path > " + path + " " + path[0:4]
 }
 
 func validateAuthorization(path, method string, headers map[string]string) (bool, int, string) {
