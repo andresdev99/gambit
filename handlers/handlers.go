@@ -62,12 +62,12 @@ func validateAuthorization(path, method string, headers map[string]string) (bool
 
 func UsersProcess(body, path, method, user, id string, request events.APIGatewayV2HTTPRequest) (int, string) {
 
-	return 400, "Invalid Method"
+	return 400, "Invalid Method For UsersProcess"
 }
 
 func ProductsProcess(body, path, method, user string, id int, request events.APIGatewayV2HTTPRequest) (int, string) {
 
-	return 400, "Invalid Method"
+	return 400, "Invalid Method For ProductsProcess"
 }
 
 func CategoryProcess(body, path, method, user string, id int, request events.APIGatewayV2HTTPRequest) (int, string) {
@@ -75,20 +75,20 @@ func CategoryProcess(body, path, method, user string, id int, request events.API
 	case "POST":
 		return routers.InsertCategory(body, user)
 	}
-	return 400, "Invalid Method"
+	return 400, "Invalid Method For Category"
 }
 
 func StockProcess(body, path, method, user string, id int, request events.APIGatewayV2HTTPRequest) (int, string) {
 
-	return 400, "Invalid Method"
+	return 400, "Invalid Method For StockProcess"
 }
 
 func AddressProcess(body, path, method, user string, id int, request events.APIGatewayV2HTTPRequest) (int, string) {
 
-	return 400, "Invalid Method"
+	return 400, "Invalid Method For AddressProcess"
 }
 
 func OrderProcess(body, path, method, user string, id int, request events.APIGatewayV2HTTPRequest) (int, string) {
 
-	return 400, "Invalid Method"
+	return 400, "Invalid Method For OrderProcess"
 }
