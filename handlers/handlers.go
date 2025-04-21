@@ -57,7 +57,7 @@ func validateAuthorization(path, method string, headers map[string]string) (bool
 		return false, 401, msg
 	}
 	fmt.Println("Token OK")
-	return true, 200, ""
+	return true, 200, msg
 }
 
 func UsersProcess(body, path, method, user, id string, request events.APIGatewayV2HTTPRequest) (int, string) {
