@@ -60,6 +60,8 @@ func UserIsAdmin(userUUID string) (bool, string) {
 
 	sentence := fmt.Sprintf("SELECT 1 FROM users where User_UUID ='%s' AND User_Status = 0", userUUID)
 	fmt.Printf("Sentence > %s", sentence)
+	fmt.Printf("User_UUID > %s", userUUID)
+	fmt.Println("User_UUID > " + userUUID)
 
 	rows, err := Db.Query(sentence)
 	if err != nil {
