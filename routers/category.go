@@ -58,3 +58,18 @@ func UpdateCategory(body, user string, id int) (int, string) {
 	}
 	return 200, "updated"
 }
+
+func DeleteCategory(user string, id int) (int, string) {
+	var t models.Category
+	isAdmin, msg := db.UserIsAdmin(user)
+	if !isAdmin {
+		return 400, msg
+	}
+
+	t.CategID = id
+	err2 := db.DeleteCategory(t)
+	if err2 != nil {
+		return 400, "Error when trying to Delete Category " + strconv.Itoa(id) + " > " + err2.Error()
+	}
+	return 200, "Deleted"
+}

@@ -86,3 +86,38 @@ func UpdateCategory(c models.Category) error {
 	fmt.Println("Update Category successfully")
 	return nil
 }
+
+func DeleteCategory(c models.Category) error {
+	fmt.Println("Starting Update Category")
+
+	err := DbConnect()
+
+	if err != nil {
+		return err
+	}
+	defer Db.Close()
+
+	sentence := fmt.Sprintf("DELETE FROM category WHERE Categ_Id = %d", c.CategID)
+
+	fmt.Printf("Sentence > %s", sentence)
+
+	var result sql.Result
+
+	result, err = Db.Exec(sentence)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	rowsAffected, err2 := result.RowsAffected()
+	if err2 != nil {
+		return err2
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("error when deleting")
+	}
+
+	fmt.Println("Delete Category successfully")
+	return nil
+}

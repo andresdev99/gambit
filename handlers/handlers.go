@@ -76,6 +76,8 @@ func CategoryProcess(body, path, method, user string, id int, request events.API
 		return routers.InsertCategory(body, user)
 	case "PUT":
 		return routers.UpdateCategory(body, user, id)
+	case "DELETE":
+		return routers.DeleteCategory(user, id)
 	}
 	return 400, "Invalid Method For Category"
 }
