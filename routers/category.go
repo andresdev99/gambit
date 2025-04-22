@@ -117,8 +117,6 @@ func GetCategories(request events.APIGatewayV2HTTPRequest) (int, string) {
 		}
 	} else if s := queryParams["slug"]; len(s) > 0 {
 		slug = s
-	} else {
-		return 400, "Missing required parameter: 'categId' or 'slug'"
 	}
 
 	var list []models.Category
