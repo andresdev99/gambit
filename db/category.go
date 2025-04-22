@@ -54,7 +54,7 @@ func UpdateCategory(c models.Category) error {
 	}
 
 	if catPath := tools.ScapeString(c.CategPath); len(catPath) > 0 {
-		categoryValues = append(categoryValues, fmt.Sprintf("Categ_Id = '%s'", catPath))
+		categoryValues = append(categoryValues, fmt.Sprintf("Categ_Path= '%s'", catPath))
 	}
 
 	if len(categoryValues) == 0 {
@@ -62,7 +62,7 @@ func UpdateCategory(c models.Category) error {
 	}
 
 	sentence += strings.Join(categoryValues, ", ")
-	sentence += fmt.Sprintf("WHERE Categ_Id = %d", c.CategID)
+	sentence += fmt.Sprintf(" WHERE Categ_Id = %d", c.CategID)
 
 	fmt.Printf("Sentence > %s", sentence)
 
