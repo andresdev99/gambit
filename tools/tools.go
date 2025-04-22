@@ -2,6 +2,7 @@ package tools
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -16,4 +17,10 @@ func MYSQLDate() string {
 		t.Minute(),
 		t.Second(),
 	)
+}
+
+func ScapeString(t string) string {
+	desc := strings.ReplaceAll(t, "'", "")
+	desc = strings.ReplaceAll(desc, "\"", "")
+	return desc
 }
