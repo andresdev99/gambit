@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/andresdev99/gambit/db"
 	"github.com/andresdev99/gambit/models"
+	"github.com/aws/aws-lambda-go/events"
 	"strconv"
 )
 
@@ -60,16 +61,77 @@ func UpdateCategory(body, user string, id int) (int, string) {
 }
 
 func DeleteCategory(user string, id int) (int, string) {
-	var t models.Category
 	isAdmin, msg := db.UserIsAdmin(user)
 	if !isAdmin {
 		return 400, msg
 	}
 
-	t.CategID = id
-	err2 := db.DeleteCategory(t)
+	err2 := db.DeleteCategory(id)
 	if err2 != nil {
 		return 400, "Error when trying to Delete Category " + strconv.Itoa(id) + " > " + err2.Error()
 	}
 	return 200, "Deleted"
+}
+
+//func GetCategories(body string, request events.APIGatewayV2HTTPRequest) (int, string) {
+//	var CategId int
+//	var Slug string
+//	var err error
+//
+//	if CategId := request.QueryStringParameters["categId"]; len(CategId) > 0 {
+//		CategId, err := strconv.Atoi(CategId)
+//
+//		if err != nil {
+//			return 500, "Error when trying to convert to integer " + strconv.Itoa(CategId)
+//		}
+//	} else if Slug := request.QueryStringParameters["slug"]; len(Slug) > 0 {
+//		// just assign slug
+//	}
+//
+//	list, err2 := db.GetCategories(CategId)
+//
+//	if err2 != nil {
+//		return 400, "Error when retrieving categories " + err2.Error()
+//	}
+//
+//	Categ, err3 := json.Marshal(list)
+//
+//	if err3 != nil {
+//		return 400, "Error when converting categories" + err3.Error()
+//	}
+//
+//	return 200, string(Categ)
+//}
+
+func GetCategories(request events.APIGatewayV2HTTPRequest) (int, string) {
+	var categID int
+	var slug string
+	var err error
+
+	queryParams := request.QueryStringParameters
+
+	if rawID := queryParams["categId"]; len(rawID) > 0 {
+		categID, err = strconv.Atoi(rawID)
+		if err != nil {
+			return 400, "Invalid 'categId' parameter: must be an integer"
+		}
+	} else if s := queryParams["slug"]; len(s) > 0 {
+		slug = s
+	} else {
+		return 400, "Missing required parameter: 'categId' or 'slug'"
+	}
+
+	var list []models.Category
+	list, err = db.GetCategories(categID, slug)
+
+	if err != nil {
+		return 500, "Error retrieving categories: " + err.Error()
+	}
+
+	jsonData, err := json.Marshal(list)
+	if err != nil {
+		return 500, "Error encoding categories to JSON: " + err.Error()
+	}
+
+	return 200, string(jsonData)
 }

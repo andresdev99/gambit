@@ -87,7 +87,7 @@ func UpdateCategory(c models.Category) error {
 	return nil
 }
 
-func DeleteCategory(c models.Category) error {
+func DeleteCategory(id int) error {
 	fmt.Println("Starting Update Category")
 
 	err := DbConnect()
@@ -97,7 +97,7 @@ func DeleteCategory(c models.Category) error {
 	}
 	defer Db.Close()
 
-	sentence := fmt.Sprintf("DELETE FROM category WHERE Categ_Id = %d", c.CategID)
+	sentence := fmt.Sprintf("DELETE FROM category WHERE Categ_Id = %d", id)
 
 	fmt.Printf("Sentence > %s", sentence)
 
@@ -120,4 +120,50 @@ func DeleteCategory(c models.Category) error {
 
 	fmt.Println("Delete Category successfully")
 	return nil
+}
+
+func GetCategories(CategId int, Slug string) ([]models.Category, error) {
+	fmt.Println("Starting Select Categories")
+
+	var Categ []models.Category
+	err := DbConnect()
+
+	if err != nil {
+		return Categ, err
+	}
+	defer Db.Close()
+
+	sentence := "SELECT Categ_Id, Categ_Name, Categ_Path FROM category"
+
+	if CategId > 0 {
+		sentence += fmt.Sprintf(" WHERE Categ_Id = %d", CategId)
+	} else if len(Slug) > 0 {
+		sentence += fmt.Sprintf(" WHERE Categ_Path LIKE '%%s%'", Slug)
+	}
+	fmt.Printf("Sentence > %s", sentence)
+
+	var rows *sql.Rows
+	rows, err = Db.Query(sentence)
+
+	for rows.Next() {
+		var c models.Category
+		var categId sql.NullInt32
+		var categName sql.NullString
+		var categPath sql.NullString
+
+		err := rows.Scan(&categId, &categName, &categPath)
+
+		if err != nil {
+			return Categ, err
+		}
+
+		c.CategID = int(categId.Int32)
+		c.CategName = categName.String
+		c.CategPath = categName.String
+		Categ = append(Categ, c)
+	}
+
+	fmt.Println("Successfully Get Category")
+
+	return Categ, nil
 }
