@@ -66,7 +66,10 @@ func UsersProcess(body, path, method, user, id string, request events.APIGateway
 }
 
 func ProductsProcess(body, path, method, user string, id int, request events.APIGatewayV2HTTPRequest) (int, string) {
-
+	switch method {
+	case "POST":
+		return routers.InsertProduct(body, user)
+	}
 	return 400, "Invalid Method For ProductsProcess"
 }
 

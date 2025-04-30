@@ -73,36 +73,6 @@ func DeleteCategory(user string, id int) (int, string) {
 	return 200, "Deleted"
 }
 
-//func GetCategories(body string, request events.APIGatewayV2HTTPRequest) (int, string) {
-//	var CategId int
-//	var Slug string
-//	var err error
-//
-//	if CategId := request.QueryStringParameters["categId"]; len(CategId) > 0 {
-//		CategId, err := strconv.Atoi(CategId)
-//
-//		if err != nil {
-//			return 500, "Error when trying to convert to integer " + strconv.Itoa(CategId)
-//		}
-//	} else if Slug := request.QueryStringParameters["slug"]; len(Slug) > 0 {
-//		// just assign slug
-//	}
-//
-//	list, err2 := db.GetCategories(CategId)
-//
-//	if err2 != nil {
-//		return 400, "Error when retrieving categories " + err2.Error()
-//	}
-//
-//	Categ, err3 := json.Marshal(list)
-//
-//	if err3 != nil {
-//		return 400, "Error when converting categories" + err3.Error()
-//	}
-//
-//	return 200, string(Categ)
-//}
-
 func GetCategories(request events.APIGatewayV2HTTPRequest) (int, string) {
 	var categID int
 	var slug string
