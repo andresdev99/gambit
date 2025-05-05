@@ -16,8 +16,8 @@ const (
 )
 
 var modelProperties = map[string]string{
-	"products": "Prod_id",
-	"category": "Categ_id",
+	"products": "Prod_Id",
+	"category": "Categ_Id",
 }
 
 type modelTypes interface {
