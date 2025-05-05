@@ -109,7 +109,7 @@ func UpdateProduct(p models.Product) error {
 
 	var result sql.Result
 
-	result, err = Db.Exec(sentence, args)
+	result, err = Db.Exec(sentence, args...)
 
 	if err != nil {
 		fmt.Println(err.Error())
