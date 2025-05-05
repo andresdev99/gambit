@@ -19,7 +19,7 @@ func InsertCategory(c models.Category) (int64, error) {
 	}
 	defer Db.Close()
 	sentence := fmt.Sprintf("INSERT INTO category (Categ_Name, Categ_Path) VALUES ('%s', '%s')", c.CategName, c.CategPath)
-	fmt.Printf("Sentence > %s", sentence)
+	fmt.Printf("Sentence > %s\n", sentence)
 
 	var result sql.Result
 
@@ -64,7 +64,7 @@ func UpdateCategory(c models.Category) error {
 	sentence += strings.Join(categoryValues, ", ")
 	sentence += fmt.Sprintf(" WHERE Categ_Id = %d", c.CategID)
 
-	fmt.Printf("Sentence > %s", sentence)
+	fmt.Printf("Sentence > %s\n", sentence)
 
 	var result sql.Result
 
@@ -99,7 +99,7 @@ func DeleteCategory(id int) error {
 
 	sentence := fmt.Sprintf("DELETE FROM category WHERE Categ_Id = %d", id)
 
-	fmt.Printf("Sentence > %s", sentence)
+	fmt.Printf("Sentence > %s\n", sentence)
 
 	var result sql.Result
 
@@ -140,7 +140,7 @@ func GetCategories(CategId int, Slug string) ([]models.Category, error) {
 	} else if len(Slug) > 0 {
 		sentence += fmt.Sprintf(" WHERE Categ_Path LIKE '%%s%'", Slug)
 	}
-	fmt.Printf("Sentence > %s", sentence)
+	fmt.Printf("Sentence > %s\n", sentence)
 
 	var rows *sql.Rows
 	rows, err = Db.Query(sentence)

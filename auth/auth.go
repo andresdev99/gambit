@@ -48,7 +48,7 @@ func ValidateToken(token string) (bool, error, string) {
 	tm := time.Unix(int64(tkj.Exp), 0)
 
 	if tm.Before(now) {
-		fmt.Printf("Expiration date = %s", tm.String())
+		fmt.Printf("Expiration date = %s\n", tm.String())
 		message := "Expired Token"
 		fmt.Println(message)
 		return false, nil, message

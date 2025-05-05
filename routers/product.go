@@ -52,19 +52,19 @@ func UpdateProduct(body, user string, id int) (int, string) {
 	return 200, "updated"
 }
 
-//func DeleteCategory(user string, id int) (int, string) {
-//	isAdmin, msg := db.UserIsAdmin(user)
-//	if !isAdmin {
-//		return 400, msg
-//	}
-//
-//	err2 := db.DeleteCategory(id)
-//	if err2 != nil {
-//		return 400, "Error when trying to Delete Category " + strconv.Itoa(id) + " > " + err2.Error()
-//	}
-//	return 200, "Deleted"
-//}
-//
+func DeleteProduct(user string, id int) (int, string) {
+	isAdmin, msg := db.UserIsAdmin(user)
+	if !isAdmin {
+		return 400, msg
+	}
+
+	err2 := db.DeleteProduct(id)
+	if err2 != nil {
+		return 400, "Error when trying to Delete Product " + strconv.Itoa(id) + " > " + err2.Error()
+	}
+	return 200, "Deleted"
+}
+
 //func GetCategories(request events.APIGatewayV2HTTPRequest) (int, string) {
 //	var categID int
 //	var slug string

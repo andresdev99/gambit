@@ -66,18 +66,15 @@ func InsertProduct(p models.Product) (int64, error) {
 		}
 	}
 
-	// 2) join them and build the debug SQL
 	debug := fmt.Sprintf(
 		"INSERT INTO products (%s) VALUES (%s)",
 		strings.Join(fields, ", "),
 		strings.Join(debugArgs, ", "),
 	)
 
-	fmt.Printf("Sentence > %s", debug)
+	fmt.Printf("Sentence > %s\n", debug)
 
 	var result sql.Result
-
-	// 5. exec with args
 	result, err := Db.Exec(query, args...)
 	if err != nil {
 		return 0, fmt.Errorf("InsertProduct exec: %w", err)
@@ -105,7 +102,7 @@ func UpdateProduct(p models.Product) error {
 		return err
 	}
 
-	fmt.Printf("Sentence > %s", debug)
+	fmt.Printf("Sentence > %s\n", debug)
 
 	var result sql.Result
 
@@ -124,6 +121,41 @@ func UpdateProduct(p models.Product) error {
 		return fmt.Errorf("error when Updating")
 	}
 
-	fmt.Println("Update Category successfully")
+	fmt.Println("Update Product successfully")
+	return nil
+}
+
+func DeleteProduct(id int) error {
+	fmt.Println("Starting Update Product")
+
+	err := DbConnect()
+
+	if err != nil {
+		return err
+	}
+	defer Db.Close()
+
+	sentence := fmt.Sprintf("DELETE FROM products WHERE Prod_Id = %d", id)
+
+	fmt.Printf("Sentence > %s\n", sentence)
+
+	var result sql.Result
+
+	result, err = Db.Exec(sentence)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	rowsAffected, err2 := result.RowsAffected()
+	if err2 != nil {
+		return err2
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("error when deleting")
+	}
+
+	fmt.Println("Delete Product successfully")
 	return nil
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func Handlers(path, method, body string, headers map[string]string, request events.APIGatewayV2HTTPRequest) (int, string) {
-	fmt.Printf("Processing %s > %s", path, method)
+	fmt.Printf("Processing %s > %s\n", path, method)
 	id := request.PathParameters["id"]
 	idNumber, _ := strconv.Atoi(id)
 	isOk, statusCode, user := validateAuthorization(path, method, headers)
@@ -71,6 +71,8 @@ func ProductsProcess(body, path, method, user string, id int, request events.API
 		return routers.InsertProduct(body, user)
 	case "PUT":
 		return routers.UpdateProduct(body, user, id)
+	case "DELETE":
+		return routers.DeleteProduct(user, id)
 	}
 	return 400, "Invalid Method For ProductsProcess"
 }

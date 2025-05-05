@@ -59,7 +59,7 @@ func UserIsAdmin(userUUID string) (bool, string) {
 	defer Db.Close()
 
 	sentence := fmt.Sprintf("SELECT 1 FROM users where User_UUID ='%s' AND User_Status = 0", userUUID)
-	fmt.Printf("Sentence > %s", sentence)
+	fmt.Printf("Sentence > %s\n", sentence)
 
 	rows, err := Db.Query(sentence)
 	if err != nil {
