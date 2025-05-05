@@ -99,7 +99,7 @@ func UpdateProduct(p models.Product) error {
 	}
 	defer Db.Close()
 
-	sentence, args, debug, err := tools.BuildSQL(p, "products", tools.Insert)
+	sentence, args, debug, err := tools.BuildSQL(p, "products", tools.Update)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
