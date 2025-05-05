@@ -69,6 +69,8 @@ func ProductsProcess(body, path, method, user string, id int, request events.API
 	switch method {
 	case "POST":
 		return routers.InsertProduct(body, user)
+	case "PUT":
+		return routers.UpdateProduct(body, user, id)
 	}
 	return 400, "Invalid Method For ProductsProcess"
 }
