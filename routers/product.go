@@ -32,31 +32,26 @@ func InsertProduct(body, user string) (int, string) {
 	return 200, fmt.Sprintf("{ ProdId: %s}", strconv.Itoa(int(result)))
 }
 
-//
-//func UpdateProduct(body, user string, id int) (int, string) {
-//	var t models.Category
-//	err := json.Unmarshal([]byte(body), &t)
-//	if err != nil {
-//		return 400, "Error in received data " + err.Error()
-//	}
-//
-//	if len(t.CategPath) == 0 && len(t.CategName) == 0 {
-//		return 400, "Should specify categName and CategName"
-//
-//	}
-//	isAdmin, msg := db.UserIsAdmin(user)
-//	if !isAdmin {
-//		return 400, msg
-//	}
-//
-//	t.CategID = id
-//	err2 := db.UpdateCategory(t)
-//	if err2 != nil {
-//		return 400, "Error when trying to Update Category " + strconv.Itoa(id) + " > " + err2.Error()
-//	}
-//	return 200, "updated"
-//}
-//
+func UpdateProduct(body, user string, id int) (int, string) {
+	var t models.Product
+	err := json.Unmarshal([]byte(body), &t)
+	if err != nil {
+		return 400, "Error in received data " + err.Error()
+	}
+
+	isAdmin, msg := db.UserIsAdmin(user)
+	if !isAdmin {
+		return 400, msg
+	}
+
+	t.ProdID = id
+	err2 := db.UpdateProduct(t)
+	if err2 != nil {
+		return 400, "Error when trying to Update Product " + strconv.Itoa(id) + " > " + err2.Error()
+	}
+	return 200, "updated"
+}
+
 //func DeleteCategory(user string, id int) (int, string) {
 //	isAdmin, msg := db.UserIsAdmin(user)
 //	if !isAdmin {

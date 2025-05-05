@@ -44,7 +44,7 @@ func UpdateCategory(body, user string, id int) (int, string) {
 	}
 
 	if len(t.CategPath) == 0 && len(t.CategName) == 0 {
-		return 400, "Should specify categName and CategName"
+		return 400, "Should specify categPath and CategName"
 
 	}
 	isAdmin, msg := db.UserIsAdmin(user)

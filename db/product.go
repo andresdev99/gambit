@@ -89,3 +89,74 @@ func InsertProduct(p models.Product) (int64, error) {
 	}
 	return id, nil
 }
+
+func UpdateProduct(p models.Product) error {
+	fmt.Println("Starting Update Product")
+	err := DbConnect()
+
+	if err != nil {
+		return err
+	}
+	defer Db.Close()
+
+	//sentence := "UPDATE products SET "
+	//
+	//if prodPathVal := tools.ScapeString(p.ProdPath); len(prodPathVal) > 0 {
+	//	productValues = append(productValues, fmt.Sprintf("Prod_Path = %q", prodPathVal))
+	//}
+	//
+	//if prodTitle := tools.ScapeString(p.ProdTitle); len(prodTitle) > 0 {
+	//	productValues = append(productValues, fmt.Sprintf("Prod_Title= %q", prodTitle))
+	//}
+	//
+	//if prodDescription := tools.ScapeString(p.ProdTitle); len(prodDescription) > 0 {
+	//	productValues = append(productValues, fmt.Sprintf("Prod_Description= %q", prodDescription))
+	//}
+	//
+	//if p.ProdPrice > 0 {
+	//	productValues = append(productValues, fmt.Sprintf("Prod_ProdPrice= %v", p.ProdPrice))
+	//}
+	//
+	//if p.ProdCategoryID > 0 {
+	//	productValues = append(productValues, fmt.Sprintf("Prod_CategoryId= %v", p.ProdCategoryID))
+	//}
+	//
+	//if p.ProdStock > 0 {
+	//	productValues = append(productValues, fmt.Sprintf("Prod_Prod_Stock= %v", p.ProdStock))
+	//}
+	//
+	//if len(productValues) == 0 {
+	//	return fmt.Errorf("no values to update")
+	//}
+	//
+	//sentence += strings.Join(productValues, ", ")
+	//sentence += fmt.Sprintf(" WHERE Prod_Id = %d", p.ProdID)
+
+	sentence, args, debug, err := tools.BuildSQL(p, "products", tools.Insert)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	fmt.Printf("Sentence > %s", debug)
+
+	var result sql.Result
+
+	result, err = Db.Exec(sentence, args)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	rowsAffected, err2 := result.RowsAffected()
+	if err2 != nil {
+		return err2
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("error when Updating")
+	}
+
+	fmt.Println("Update Category successfully")
+	return nil
+}
