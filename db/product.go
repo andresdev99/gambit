@@ -97,7 +97,7 @@ func UpdateStock(p models.Product) error {
 	}
 	defer Db.Close()
 
-	sentence := fmt.Sprintf("UPDATE products SET Prod_Stock = Prod_Stock + %v", p.ProdStock)
+	sentence := fmt.Sprintf("UPDATE products SET Prod_Stock = Prod_Stock + %v WHERE Prod_id = %d", p.ProdStock, p.ProdID)
 
 	fmt.Printf("Sentence > %s\n", sentence)
 
