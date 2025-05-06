@@ -94,7 +94,10 @@ func CategoryProcess(body, path, method, user string, id int, request events.API
 }
 
 func StockProcess(body, path, method, user string, id int, request events.APIGatewayV2HTTPRequest) (int, string) {
-
+	switch method {
+	case "PATCH":
+		return routers.UpdateStock(body, user, id)
+	}
 	return 400, "Invalid Method For StockProcess"
 }
 

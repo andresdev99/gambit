@@ -87,6 +87,41 @@ func InsertProduct(p models.Product) (int64, error) {
 	return id, nil
 }
 
+func UpdateStock(p models.Product) error {
+	fmt.Println("Starting Update Stock")
+
+	err := DbConnect()
+
+	if err != nil {
+		return err
+	}
+	defer Db.Close()
+
+	sentence := fmt.Sprintf("UPDATE products SET Prod_Stock = Prod_Stock + %v", p.ProdStock)
+
+	fmt.Printf("Sentence > %s\n", sentence)
+
+	result, err := Db.Exec(sentence)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	rowsAffected, err2 := result.RowsAffected()
+
+	if err2 != nil {
+		return err2
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("error when Updating")
+	}
+
+	fmt.Println("Update Stock successfully")
+	return nil
+}
+
 func UpdateProduct(p models.Product) error {
 	fmt.Println("Starting Update Product")
 	err := DbConnect()

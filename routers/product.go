@@ -33,6 +33,25 @@ func InsertProduct(body, user string) (int, string) {
 	return 200, fmt.Sprintf("{ ProdId: %s}", strconv.Itoa(int(result)))
 }
 
+func UpdateStock(body, user string, id int) (int, string) {
+	var t models.Product
+	err := json.Unmarshal([]byte(body), &t)
+	if err != nil {
+		return 400, "Error in received data " + err.Error()
+	}
+
+	isAdmin, msg := db.UserIsAdmin(user)
+	if !isAdmin {
+		return 400, msg
+	}
+
+	t.ProdID = id
+	err2 := db.UpdateStock(t)
+	if err2 != nil {
+		return 400, "Error when trying to Update Stock " + strconv.Itoa(id) + " > " + err2.Error()
+	}
+	return 200, "updated"
+}
 func UpdateProduct(body, user string, id int) (int, string) {
 	var t models.Product
 	err := json.Unmarshal([]byte(body), &t)
