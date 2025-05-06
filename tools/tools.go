@@ -24,7 +24,121 @@ type modelTypes interface {
 	models.Product | models.Category
 }
 
-func BuildSQL[mType modelTypes](model mType, table string, op Operation) (string, []any, string, error) {
+func BuildSelectQuery[T modelTypes](
+	filter T,
+	table string,
+	orderBy string,
+	orderDir string,
+	limit int,
+	offset int,
+) (string, []any, string, error) {
+	t := reflect.TypeOf(filter)
+	v := reflect.ValueOf(filter)
+
+	if t.Kind() != reflect.Struct {
+		return "", nil, "", fmt.Errorf("filter must be a struct")
+	}
+
+	var selectFields []string
+	var whereClauses []string
+	var args []any
+
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		dbTag := field.Tag.Get("db")
+		if dbTag == "" {
+			continue
+		}
+
+		selectFields = append(selectFields, dbTag)
+
+		val := v.Field(i).Interface()
+		if reflect.ValueOf(val).IsZero() {
+			continue
+		}
+
+		if field.Type.Kind() == reflect.String {
+			whereClauses = append(whereClauses, fmt.Sprintf("%s LIKE ?", dbTag))
+			args = append(args, "%"+val.(string)+"%")
+		} else {
+			whereClauses = append(whereClauses, fmt.Sprintf("%s = ?", dbTag))
+			args = append(args, val)
+		}
+	}
+
+	// Start building query
+	query := fmt.Sprintf("SELECT %s FROM %s", strings.Join(selectFields, ", "), table)
+
+	if len(whereClauses) > 0 {
+		query += " WHERE " + strings.Join(whereClauses, " AND ")
+	}
+
+	// Validate orderBy using struct's db tags
+	if orderBy != "" {
+		validCols := map[string]bool{}
+		for i := 0; i < t.NumField(); i++ {
+			if col := t.Field(i).Tag.Get("db"); col != "" {
+				validCols[col] = true
+			}
+		}
+
+		if validCols[orderBy] {
+			orderDir = strings.ToUpper(orderDir)
+			if orderDir != "ASC" && orderDir != "DESC" {
+				orderDir = "ASC"
+			}
+			query += fmt.Sprintf(" ORDER BY %s %s", orderBy, orderDir)
+		} else {
+			fmt.Printf("⚠️  Ignoring invalid orderField: %q\n", orderBy)
+		}
+	}
+
+	// Add LIMIT / OFFSET
+	if limit > 0 {
+		query += fmt.Sprintf(" LIMIT %d", limit)
+		if offset > 0 {
+			query += fmt.Sprintf(" OFFSET %d", offset)
+		}
+	}
+
+	debug := interpolateQuery(query, args)
+	return query, args, debug, nil
+}
+
+func BuildDeleteQuery[T modelTypes](model T, table string) (string, []any, string, error) {
+	pk, ok := modelProperties[table]
+	if !ok {
+		return "", nil, "", fmt.Errorf("no primary key defined for table %q", table)
+	}
+
+	v := reflect.ValueOf(model)
+	t := reflect.TypeOf(model)
+
+	if v.Kind() != reflect.Struct {
+		return "", nil, "", fmt.Errorf("model must be a struct")
+	}
+
+	var pkValue any
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		dbTag := field.Tag.Get("db")
+		if dbTag == pk {
+			pkValue = v.Field(i).Interface()
+			break
+		}
+	}
+
+	if pkValue == nil || reflect.ValueOf(pkValue).IsZero() {
+		return "", nil, "", fmt.Errorf("primary key value is missing or zero")
+	}
+
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s = ?", table, pk)
+	debug := interpolateQuery(query, []any{pkValue})
+
+	return query, []any{pkValue}, debug, nil
+}
+
+func BuildInsertUpdateQuery[mType modelTypes](model mType, table string, op Operation) (string, []any, string, error) {
 	v := reflect.ValueOf(model)
 
 	pk, ok := modelProperties[table]

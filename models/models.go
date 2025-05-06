@@ -32,6 +32,6 @@ type Product struct {
 	ProdStock       int     `json:"prodStock" db:"Prod_Stock"`
 
 	// These fields don't exist in the database, so they shouldn't have `db` tags
-	ProdSearch    int `json:"prodSearch,omitempty"`
-	ProdCategPath int `json:"ProdCategPath,omitempty"`
+	ProdSearch    string `json:"prodSearch,omitempty"`
+	ProdCategPath string `json:"ProdCategPath,omitempty"`
 }

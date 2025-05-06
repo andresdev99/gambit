@@ -96,7 +96,7 @@ func UpdateProduct(p models.Product) error {
 	}
 	defer Db.Close()
 
-	sentence, args, debug, err := tools.BuildSQL(p, "products", tools.Update)
+	sentence, args, debug, err := tools.BuildInsertUpdateQuery(p, "products", tools.Update)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
@@ -158,4 +158,52 @@ func DeleteProduct(id int) error {
 
 	fmt.Println("Delete Product successfully")
 	return nil
+}
+
+func GetProducts(filter models.Product, orderBy, orderDir string, limit, offset int) ([]models.Product, error) {
+	var products []models.Product
+
+	if err := DbConnect(); err != nil {
+		return products, err
+	}
+	defer Db.Close()
+
+	query, args, debug, err := tools.BuildSelectQuery(filter, "products", orderBy, orderDir, limit, offset)
+	if err != nil {
+		return products, err
+	}
+
+	fmt.Println("Query >", debug)
+
+	rows, err := Db.Query(query, args...)
+	if err != nil {
+		return products, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var p models.Product
+		var prodID, stock, categoryID sql.NullInt32
+		var title, desc, createdAt, updatedAt, path sql.NullString
+		var price sql.NullFloat64
+
+		err := rows.Scan(&prodID, &title, &desc, &createdAt, &updatedAt, &price, &path, &categoryID, &stock)
+		if err != nil {
+			return products, err
+		}
+
+		p.ProdID = int(prodID.Int32)
+		p.ProdTitle = title.String
+		p.ProdDescription = desc.String
+		p.ProdCreatedAt = createdAt.String
+		p.ProdUpdated = updatedAt.String
+		p.ProdPrice = price.Float64
+		p.ProdPath = path.String
+		p.ProdCategoryID = int(categoryID.Int32)
+		p.ProdStock = int(stock.Int32)
+
+		products = append(products, p)
+	}
+
+	return products, nil
 }

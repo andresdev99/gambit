@@ -73,6 +73,8 @@ func ProductsProcess(body, path, method, user string, id int, request events.API
 		return routers.UpdateProduct(body, user, id)
 	case "DELETE":
 		return routers.DeleteProduct(user, id)
+	case "GET":
+		return routers.GetProducts(request)
 	}
 	return 400, "Invalid Method For ProductsProcess"
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/andresdev99/gambit/db"
 	"github.com/andresdev99/gambit/models"
+	"github.com/aws/aws-lambda-go/events"
 	"strconv"
 )
 
@@ -65,33 +66,48 @@ func DeleteProduct(user string, id int) (int, string) {
 	return 200, "Deleted"
 }
 
-//func GetCategories(request events.APIGatewayV2HTTPRequest) (int, string) {
-//	var categID int
-//	var slug string
-//	var err error
-//
-//	queryParams := request.QueryStringParameters
-//
-//	if rawID := queryParams["categId"]; len(rawID) > 0 {
-//		categID, err = strconv.Atoi(rawID)
-//		if err != nil {
-//			return 400, "Invalid 'categId' parameter: must be an integer"
-//		}
-//	} else if s := queryParams["slug"]; len(s) > 0 {
-//		slug = s
-//	}
-//
-//	var list []models.Category
-//	list, err = db.GetCategories(categID, slug)
-//
-//	if err != nil {
-//		return 500, "Error retrieving categories: " + err.Error()
-//	}
-//
-//	jsonData, err := json.Marshal(list)
-//	if err != nil {
-//		return 500, "Error encoding categories to JSON: " + err.Error()
-//	}
-//
-//	return 200, string(jsonData)
-//}
+func GetProducts(request events.APIGatewayV2HTTPRequest) (int, string) {
+	var p models.Product
+	queryParams := request.QueryStringParameters
+
+	// Parse and validate filters
+	if rawID := queryParams["prodId"]; rawID != "" {
+		if id, err := strconv.Atoi(rawID); err == nil {
+			p.ProdID = id
+		} else {
+			return 400, "Invalid 'prodId' parameter: must be an integer"
+		}
+	}
+
+	if rawCateg := queryParams["categId"]; rawCateg != "" {
+		p.ProdCategoryID, _ = strconv.Atoi(rawCateg)
+	}
+
+	if search := queryParams["search"]; search != "" {
+		p.ProdTitle = search // will trigger LIKE
+	}
+
+	if slug := queryParams["slug"]; slug != "" {
+		p.ProdPath = slug
+	}
+
+	// Sorting and pagination
+	orderField := queryParams["orderField"]
+	orderType := queryParams["orderType"]
+	pageSize, _ := strconv.Atoi(queryParams["pageSize"])
+	page, _ := strconv.Atoi(queryParams["page"])
+	offset := (page - 1) * pageSize
+
+	// Query products
+	list, err := db.GetProducts(p, orderField, orderType, pageSize, offset)
+	if err != nil {
+		return 500, "Error retrieving products: " + err.Error()
+	}
+
+	jsonData, err := json.Marshal(list)
+	if err != nil {
+		return 500, "Error encoding products to JSON: " + err.Error()
+	}
+
+	return 200, string(jsonData)
+}
